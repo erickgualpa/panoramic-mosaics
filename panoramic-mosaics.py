@@ -1,7 +1,6 @@
 import cv2
 import os
 import numpy as np
-from Canvas import *
 from functions import *
 import operator
 
@@ -70,7 +69,7 @@ imgCB = writeMessageOnImage(img3.copy(), "SELECCIONA los PUNTOS en la IMAGEN DER
 cv2.namedWindow('image')
 cv2.setMouseCallback('image',getPointC)
 cv2.imshow('image',imgCB) 
-cv2.waitKey(0) 
+cv2.waitKey(0)
 ##############################################################################################
 
 # 3 - (DLT) CÁLCULO DE LA HOMOGRAFIA #########################################################
