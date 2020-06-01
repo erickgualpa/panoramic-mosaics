@@ -1,4 +1,4 @@
-# Panoramic Mosaic
+# Panoramic mosaic generation
 This is a very simple project for generating a panoramic mosaic from 3 contiguous images.
 
 ![Panoramic mosaic](results/canvas3.jpg)
