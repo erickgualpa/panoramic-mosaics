@@ -1,9 +1,9 @@
-# Panoramic mosaic generation
+# Panoramic mosaic generation :camera: :sunrise_over_mountains:
 This is a very simple project for generating a panoramic mosaic from 3 contiguous images.
 
 ![Panoramic mosaic](results/canvas3.jpg)
 
-## Usage 
+## Usage :memo:
 Inside this repository you will find the **./ee** directory. This is the location for the sample 
 images for executing this project. 
 
