@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 
-# FUNCIONES #########################
+# FUNCTIONS ##################################################################################
 def showImage(img):
 	if type(img) == str:
-		img = cv2.imread(img_name, cv2.IMREAD_COLOR)
+		img = cv2.imread(img, cv2.IMREAD_COLOR)
 	cv2.imshow('image',img)
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
@@ -36,10 +36,10 @@ def writeMessageOnImage(img, message):
 	img_text = cv2.putText(img, message, (x,y), font, font_size, font_color, font_thickness, cv2.LINE_AA)
 
 	return img_text
-#####################################
+##############################################################################################
 
-# GEOMETRIC TRANSFORMATIONS #########
-## Cáculo de la matriz de translación para evitar el cropping de la imagen ######
+# GEOMETRIC TRANSFORMATIONS ##################################################################
+## Translation matrix calculation in order to avoid image cropping ######
 def getAlignmentMatrixAfterHomography(img, H):
 
 	height, width = img.shape[:2]
@@ -82,11 +82,11 @@ def getCanvasShapeFromImgsBoundingRect(boundingRect_A, imgBshape, boundingRect_C
 
 	startBlendingFrom = "L"
 
-	print("\n-- DIMENSIONES DE LA IMAGEN A despues de la HOMOGRAFIA: minX, minY, width, height")
+	print("\n-- IMAGE A SHAPE after HOMOGRAPHY: minX, minY, width, height")
 	print("\n- ", boundingRect_A)
-	print("\n-- DIMENSIONES DE LA IMAGEN CENTRAL B: ")
+	print("\n-- CENTER IMAGE B SHAPE: ")
 	print("\n- ", imgBshape)
-	print("\n-- DIMENSIONES DE LA IMAGEN C despues de la HOMOGRAFIA: minX, minY, width, height")
+	print("\n-- IMAGE C SHAPE after HOMOGRAPHY: minX, minY, width, height")
 	print("\n- ", boundingRect_C)
 
 	width = abs(boundingRect_A[MIN_X]) + abs(boundingRect_C[MIN_X]) + abs(boundingRect_C[WIDTH])
@@ -106,7 +106,7 @@ def getCanvasShapeFromImgsBoundingRect(boundingRect_A, imgBshape, boundingRect_C
 
 	height = abs(minHeight) + abs(maxHeight)
 
-	print("\n-- DIMENSIONES DE LA IMAGEN PANORAMICA: ")
+	print("\n-- PANORAMIC IMAGE SHAPE: ")
 	print("\n- WIDTH: ", width)
 	print("\n- HEIGHT: ", height)
 
@@ -146,13 +146,13 @@ def blendImages(Ha,	Hc,
 
 	offset = [0,0]
 
-	print("\n-- Comenzando blending des de... : L = Izquierda, R = Derecha")
+	print("\n-- Starting blending from... : L = Left, R = Right")
 	print("\n- ", startBlendingFrom)
 	
-	if startBlendingFrom == "L": # Merging from left		
+	if startBlendingFrom == "L":	# Merging from left
 		canvas = superposeImage(canvas, imgA, offset)
 
-		## Blending de la imagen A y B ############
+		## Images A and B blending ################
 		npPointsA = np.array(pointsA, np.float32)
 		npPointsA = npPointsA.reshape(-1,1,2).astype(np.float32)
 		dstPointsA = cv2.perspectiveTransform(npPointsA, Ha)
@@ -162,13 +162,13 @@ def blendImages(Ha,	Hc,
 		workingPointB = pointsBtoA[0]
 		offset_X = (workingPointA[0] - workingPointB[0]).astype(np.int64)
 		offset_Y = (workingPointA[1] - workingPointB[1]).astype(np.int64)
-		print("\n-- VALOR DEL OFFSET CALCULADO de la imagen CENTRAL:")
+		print("\n-- CENTER image CALCULATED OFFSET VALUE:")
 		print("\n- offset X = ", offset_X)
 		print("\n- offset Y = ", offset_Y)
 		canvas = superposeImage(canvas, imgB, [offset_X, offset_Y])
 		###########################################
 
-		## Blending de la imagen C ################
+		## Image C blending #######################
 		npPointsC = np.array(pointsC, np.float32)
 		npPointsC = npPointsC.reshape(-1,1,2).astype(np.float32)
 		dstPointsC = cv2.perspectiveTransform(npPointsC, Hc)
@@ -179,18 +179,18 @@ def blendImages(Ha,	Hc,
 		offset_X = (workingPointB[0] - workingPointC[0]).astype(np.int64)
 		offset_Y = (workingPointB[1] - workingPointC[1]).astype(np.int64)
 
-		print("\n-- VALOR DEL OFFSET CALCULADO de la imagen DERECHA:")
+		print("\n-- RIGHT image CALCULATED OFFSET VALUE:")
 		print("\n- offset X = ", offset_X)
 		print("\n- offset Y = ", offset_Y)
 		#canvas = superposeImage(canvas, imgC, [offset_X, offset_Y])
 		canvas = alphaBlending(canvas, imgC, imC_H_mask, [offset_X, offset_Y])
 		###########################################
 
-	else: # Merging from right
+	else:	# Merging from right
 		offset[0] = canvas.shape[1] - imgC.shape[1] # width
 		canvas = superposeImage(canvas, imgC, offset)
 
-		## Blending de la imagen C y B ############
+		## Images C and B blending ################
 		npPointsC = np.array(pointsC, np.float32)
 		npPointsC = npPointsC.reshape(-1,1,2).astype(np.float32)
 		dstPointsC = cv2.perspectiveTransform(npPointsC, Hc)
@@ -199,13 +199,13 @@ def blendImages(Ha,	Hc,
 		workingPointB = pointsBtoC[0]
 		offset_X = (workingPointC[0] - workingPointB[0]).astype(np.int64)
 		offset_Y = (workingPointC[1] - workingPointB[1]).astype(np.int64)
-		print("\n-- VALOR DEL OFFSET CALCULADO de la imagen CENTRAL:")
+		print("\n-- CENTER image CALCULATED OFFSET VALUE:")
 		print("\n- offset X = ", offset_X)
 		print("\n- offset Y = ", offset_Y)
 		canvas = superposeImage(canvas, imgB, [offset_X, offset_Y])
 		###########################################
 
-		## Blending de la imagen A ################
+		## Image A blending #######################
 		npPointsA = np.array(pointsA, np.float32)
 		npPointsA = npPointsA.reshape(-1,1,2).astype(np.float32)
 		dstPointsA = cv2.perspectiveTransform(npPointsA, Ha)
@@ -215,7 +215,7 @@ def blendImages(Ha,	Hc,
 		workingPointB = (offset_X + workingPointB[0], offset_Y + workingPointB[1])
 		offset_X = (workingPointB[0] - workingPointA[0]).astype(np.int64)
 		offset_Y = (workingPointB[1] - workingPointA[1]).astype(np.int64)
-		print("\n-- VALOR DEL OFFSET CALCULADO de la imagen IZQUIERDA:")
+		print("\n-- LEFT image CALCULATED OFFSET VALUE:")
 		print("\n- offset X = ", offset_X)
 		print("\n- offset Y = ", offset_Y)
 		#canvas = superposeImage(canvas, imgA, [offset_X, offset_Y])
@@ -223,4 +223,4 @@ def blendImages(Ha,	Hc,
 		###########################################
 
 	return canvas
-	
+##############################################################################################
