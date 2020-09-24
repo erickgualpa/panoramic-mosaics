@@ -2,9 +2,8 @@ import cv2
 import os
 import numpy as np
 from functions import *
-import operator
 
-# 1 - CARGAR IMÁGENES #########################################################################
+# 1 - LOAD IMAGES ############################################################################
 img_path = "./ee/"
 
 working_imgs = []
@@ -17,7 +16,7 @@ img2 = resizeImage(working_imgs[1], 15)
 img3 = resizeImage(working_imgs[2], 15)
 ##############################################################################################
 
-# 2 - SELECCIÓN DE PUNTOS DESTACABLES ########################################################
+# 2 - REMARKABLE POINTS SELECTION ############################################################
 pointsA = []
 pointsBtoA = []
 pointsBtoC = []
@@ -44,40 +43,39 @@ def getPointC(event,x,y,flags,param):
         if len(pointsC) >= 4: cv2.destroyWindow('image')
 
 param = [img1]
-imgAB = writeMessageOnImage(img1.copy(), "SELECCIONA los PUNTOS en la IMAGEN IZQUIERDA SOBRE LA CENTRAL") 
+imgAB = writeMessageOnImage(img1.copy(), "SELECT the POINTS in the LEFT IMAGE OVER THE CENTER ONE")
 cv2.namedWindow('image')
 cv2.setMouseCallback('image',getPointA)
 cv2.imshow('image',imgAB) 
 cv2.waitKey(0) 
 
 param = [img2]
-imgBA = writeMessageOnImage(img2.copy(), "SELECCIONA los PUNTOS en la IMAGEN CENTRAL SOBRE LA IZQUIERDA")
+imgBA = writeMessageOnImage(img2.copy(), "SELECT the POINTS in the CENTER IMAGE OVER THE LEFT ONE ")
 cv2.namedWindow('image')
 cv2.setMouseCallback('image',getPointBtoA)
 cv2.imshow('image',imgBA) 
 cv2.waitKey(0) 
 
 param = [img2]
-imgBC = writeMessageOnImage(img2.copy(), "SELECCIONA los PUNTOS en la IMAGEN CENTRAL SOBRE LA DERECHA")
+imgBC = writeMessageOnImage(img2.copy(), "SELECT the POINTS in the CENTER IMAGE OVER THE RIGHT ONE")
 cv2.namedWindow('image')
 cv2.setMouseCallback('image',getPointBtoC)
 cv2.imshow('image',imgBC) 
 cv2.waitKey(0) 
 
 param = [img3]
-imgCB = writeMessageOnImage(img3.copy(), "SELECCIONA los PUNTOS en la IMAGEN DERECHA SOBRE LA CENTRAL")
+imgCB = writeMessageOnImage(img3.copy(), "SELECT the POINTS in the RIGHT IMAGE OVER THE CENTER ONE")
 cv2.namedWindow('image')
 cv2.setMouseCallback('image',getPointC)
 cv2.imshow('image',imgCB) 
 cv2.waitKey(0)
 ##############################################################################################
 
-# 3 - (DLT) CÁLCULO DE LA HOMOGRAFIA #########################################################
-print("\n-- PUNTOS DE LA IMAGEN A: ", pointsA)
-print("\n-- PUNTOS DE LA IMAGEN B referente a A (central): ", pointsBtoA)
-print("\n-- PUNTOS DE LA IMAGEN B referente a C (central): ", pointsBtoC)
-print("\n-- PUNTOS DE LA IMAGEN C: ", pointsC)
-
+# 3 - (DLT) HOMOGRAPHY CALCULATION ###########################################################
+print("\n-- IMAGE A POINTS: ", pointsA)
+print("\n-- IMAGE B POINTS related to A (center): ", pointsBtoA)
+print("\n-- IMAGE B POINTS related to C (center): ", pointsBtoC)
+print("\n-- IMAGE C POINTS: ", pointsC)
 
 Ha, boundingRect_A = getHomographyMatrixByDLT(img1, pointsA, pointsBtoA)
 Hc, boundingRect_C = getHomographyMatrixByDLT(img1, pointsC, pointsBtoC)
@@ -92,10 +90,9 @@ ret, imC_H_mask = cv2.threshold(cv2.cvtColor(imC_H, cv2.COLOR_BGR2GRAY), 2, 255,
 
 #showImage(imA_H)
 #showImage(imC_H)
-
 ##############################################################################################
 
-# 4 - BLENDING DE LAS IMÁGENES (CONSTRUCCIÓN DE LA IMÁGEN PANORÁMICA) ########################
+# 4 - IMAGE BLENDING (PANORAMIC IMAGE MAKING) ################################################
 canvas = np.zeros((canvasShape[1],canvasShape[0],3), np.uint8)
 canvas = blendImages(	Ha, 
 						Hc, 
